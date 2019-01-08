@@ -27,11 +27,14 @@ public class RestClient {
     public static void main(String[] args) throws URISyntaxException, KeyManagementException, NoSuchAlgorithmException {
         ClientBuilder builder = getUnsafeSSLClientBuilder();
 
+        String oauthKey = args[0];
+        String oauthSecret = args[1];
+
         Client c = builder
                 .register(JacksonFeature.class)
                 .register(new OAuth2ClientCredentialsFeature(
-                        "xxxx",
-                        "xxxx",
+                        oauthKey,
+                        oauthSecret,
                         new URI("https://localhost:9877/learn/api/public/v1/oauth2/token")
                 ))
                 .build();
