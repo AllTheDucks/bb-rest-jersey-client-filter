@@ -30,7 +30,7 @@ public class OAuth2ClientResponseFilter implements ClientResponseFilter {
 
         if (responseContext.getStatus() == 401 && !isRetryRequest) {
             logger.debug("Set token to null, and re-request...");
-            this.tokenContext.setToken(null);
+            this.tokenContext.clearToken();
             this.tokenContext.fetchAccessToken(requestContext);
 
             final Client c = requestContext.getClient();

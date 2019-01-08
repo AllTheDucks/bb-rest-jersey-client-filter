@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.time.Clock;
+
 @JsonIgnoreProperties
-public class TokenResponse {
-    @JsonIgnore
-    private long tokenLastRefreshedTime;
+public class Token {
     private String accessToken;
     private String tokenType;
     private int expiresIn;
@@ -37,19 +37,6 @@ public class TokenResponse {
     @JsonProperty("expires_in")
     public void setExpiresIn(int expiresIn) {
         this.expiresIn = expiresIn;
-    }
-
-
-    public long getTokenLastRefreshedTime() {
-        return tokenLastRefreshedTime;
-    }
-
-    public void setTokenLastRefreshedTime(long tokenLastRefreshedTime) {
-        this.tokenLastRefreshedTime = tokenLastRefreshedTime;
-    }
-
-    public boolean hasExpired() {
-        return tokenLastRefreshedTime + expiresIn < System.currentTimeMillis() / 1000;
     }
 
 }

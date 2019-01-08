@@ -14,6 +14,7 @@ import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.net.URI;
+import java.time.Clock;
 import java.util.function.Function;
 
 public class TokenContext {
@@ -23,30 +24,39 @@ public class TokenContext {
     private final URI accessTokenUri;
     private final Function<Response, String> errorExtractor;
     private final Feature authFilter;
+    private final Clock clock;
 
-    private TokenResponse token;
+    private Token token;
+    private long tokenLastRefreshedTime;
 
     public TokenContext(final String oauthKey,
                         final String oauthSecret,
                         final URI accessTokenUri,
-                        final Function<Response, String> errorExtractor) {
+                        final Function<Response, String> errorExtractor,
+                        final Clock clock) {
 
         this.errorExtractor = errorExtractor;
         this.accessTokenUri = accessTokenUri;
 
         this.authFilter = HttpAuthenticationFeature.basic(oauthKey, oauthSecret);
+
+        this.clock = clock;
     }
 
-    public TokenResponse getToken() {
-        return token;
+    public TokenContext(final String oauthKey,
+                        final String oauthSecret,
+                        final URI accessTokenUri,
+                        final Function<Response, String> errorExtractor) {
+        this(oauthKey, oauthSecret, accessTokenUri, errorExtractor, Clock.systemUTC());
     }
 
-    public void setToken(TokenResponse token) {
-        this.token = token;
+    public void clearToken() {
+        this.token = null;
+        tokenLastRefreshedTime = 0;
     }
 
-    public TokenResponse fetchAccessToken(final ClientRequestContext requestContext) {
-        if (token == null || token.hasExpired()) {
+    public Token fetchAccessToken(final ClientRequestContext requestContext) {
+        if (token == null || isTokenExpired(token)) {
             logger.debug("New token required");
 
             final Client c = ClientBuilder.newBuilder()
@@ -68,11 +78,15 @@ public class TokenContext {
                 logger.error(errorDescription);
                 throw new AuthenticationFailureException("OAuth Client Credential Authentication failed: " + errorDescription);
             } else {
-                token = r.readEntity(TokenResponse.class);
-                token.setTokenLastRefreshedTime(System.currentTimeMillis() / 1000);
+                token = r.readEntity(Token.class);
+                tokenLastRefreshedTime = clock.millis() / 1000;
             }
         }
         return token;
+    }
+
+    private boolean isTokenExpired(final Token token) {
+        return tokenLastRefreshedTime + token.getExpiresIn() < clock.millis() / 1000;
     }
 
 }

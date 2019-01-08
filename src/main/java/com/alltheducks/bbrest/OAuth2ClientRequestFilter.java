@@ -14,7 +14,7 @@ public class OAuth2ClientRequestFilter implements ClientRequestFilter {
 
     @Override
     public void filter(final ClientRequestContext requestContext) throws IOException {
-        final TokenResponse token = this.tokenContext.fetchAccessToken(requestContext);
+        final Token token = this.tokenContext.fetchAccessToken(requestContext);
         requestContext.getHeaders().putSingle(HttpHeaders.AUTHORIZATION, "Bearer " + token.getAccessToken());
     }
 
