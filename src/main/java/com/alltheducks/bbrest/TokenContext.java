@@ -50,12 +50,19 @@ public class TokenContext {
         this(oauthKey, oauthSecret, accessTokenUri, errorExtractor, Clock.systemUTC());
     }
 
-    public void clearToken() {
+    public synchronized void clearToken() {
         this.token = null;
         tokenLastRefreshedTime = 0;
     }
 
     public Token fetchAccessToken(final ClientRequestContext requestContext) {
+        if (token == null || isTokenExpired(token)) {
+            return fetchNewAccessToken(requestContext);
+        }
+        return token;
+    }
+
+    private synchronized Token fetchNewAccessToken(final ClientRequestContext requestContext) {
         if (token == null || isTokenExpired(token)) {
             logger.debug("New token required");
 
