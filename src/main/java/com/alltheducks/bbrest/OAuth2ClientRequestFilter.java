@@ -1,28 +1,26 @@
 package com.alltheducks.bbrest;
 
 import javax.ws.rs.client.*;
+import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;
 
 public class OAuth2ClientRequestFilter implements ClientRequestFilter {
 
-    private final OAuth2ClientCredentialsFeature clientCredentialsFeature;
+    private final TokenContext tokenContext;
 
-    public OAuth2ClientRequestFilter(final OAuth2ClientCredentialsFeature clientCredentialsFeature) {
-
-        this.clientCredentialsFeature = clientCredentialsFeature;
+    public OAuth2ClientRequestFilter(final TokenContext tokenContext) {
+        this.tokenContext = tokenContext;
     }
 
     @Override
-    public void filter(ClientRequestContext requestContext) throws IOException {
+    public void filter(final ClientRequestContext requestContext) throws IOException {
 
-        TokenResponse token = this.clientCredentialsFeature.fetchAccessToken(requestContext);
+        final TokenResponse token = this.tokenContext.fetchAccessToken(requestContext);
 
-
-
-        if (requestContext.getProperty("tokenretryrequest") == null) {
-            requestContext.getHeaders().putSingle("Authorization", "Bearer " + "not-a-valid-token");
+        if (requestContext.getProperty(TokenContext.TOKEN_RETRY_REQUEST_PROPERTY_KEY) == null) {
+            requestContext.getHeaders().putSingle(HttpHeaders.AUTHORIZATION, "Bearer " + "not-a-valid-token");
         } else {
-            requestContext.getHeaders().putSingle("Authorization", "Bearer " +
+            requestContext.getHeaders().putSingle(HttpHeaders.AUTHORIZATION, "Bearer " +
                     token.getAccessToken());
         }
     }
