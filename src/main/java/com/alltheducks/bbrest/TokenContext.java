@@ -16,8 +16,6 @@ import java.util.function.Function;
 
 public class TokenContext {
 
-    public static final String TOKEN_RETRY_REQUEST_PROPERTY_KEY = "tokenretryrequest";
-
     private final URI accessTokenUri;
     private final Function<Response, String> errorExtractor;
     private final Feature authFilter;
@@ -45,11 +43,9 @@ public class TokenContext {
 
     public TokenResponse fetchAccessToken(final ClientRequestContext requestContext) {
         if (token == null || token.hasExpired()) {
-            final ClientBuilder builder = ClientBuilder.newBuilder();
-            builder.sslContext(requestContext.getClient().getSslContext());
-            builder.hostnameVerifier(requestContext.getClient().getHostnameVerifier());
-
-            final Client c = builder
+            final Client c = ClientBuilder.newBuilder()
+                    .sslContext(requestContext.getClient().getSslContext())
+                    .hostnameVerifier(requestContext.getClient().getHostnameVerifier())
                     .register(JacksonFeature.class)
                     .register(this.authFilter)
                     .build();
@@ -61,7 +57,7 @@ public class TokenContext {
                     .request()
                     .post(Entity.form(formData));
 
-            if (r.getStatus() == 400) {
+            if (r.getStatus() != 200) {
                 final String errorDescription = this.errorExtractor.apply(r);
                 System.out.println(errorDescription);
                 throw new AuthenticationFailureException("OAuth Client Credential Authentication failed: " + errorDescription);

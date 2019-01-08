@@ -10,6 +10,8 @@ import java.io.InputStream;
 
 public class OAuth2ClientResponseFilter implements ClientResponseFilter {
 
+    private static final String TOKEN_RETRY_REQUEST_PROPERTY_KEY = "tokenretryrequest";
+
     private final TokenContext tokenContext;
 
     public OAuth2ClientResponseFilter(final TokenContext tokenContext) {
@@ -18,7 +20,10 @@ public class OAuth2ClientResponseFilter implements ClientResponseFilter {
 
     @Override
     public void filter(final ClientRequestContext requestContext, final ClientResponseContext responseContext) throws IOException {
-        if (responseContext.getStatus() == 401) {
+        final Boolean retryRequestProperty = (Boolean) requestContext.getProperty(TOKEN_RETRY_REQUEST_PROPERTY_KEY);
+        final boolean isRetryRequest = retryRequestProperty != null && retryRequestProperty;
+
+        if (responseContext.getStatus() == 401 && !isRetryRequest) {
             System.out.println("Set token to null, and re-request...");
             this.tokenContext.setToken(null);
             this.tokenContext.fetchAccessToken(requestContext);
@@ -27,7 +32,7 @@ public class OAuth2ClientResponseFilter implements ClientResponseFilter {
 
             final Response r = c.target(requestContext.getUri())
                     .request(responseContext.getMediaType())
-                    .property(TokenContext.TOKEN_RETRY_REQUEST_PROPERTY_KEY, true)
+                    .property(TOKEN_RETRY_REQUEST_PROPERTY_KEY, true)
                     .build(requestContext.getMethod()).invoke();
 
             final InputStream entityStream = r.readEntity(InputStream.class);
