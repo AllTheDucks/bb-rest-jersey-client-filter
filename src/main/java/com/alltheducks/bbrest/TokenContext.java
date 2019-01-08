@@ -3,6 +3,8 @@ package com.alltheducks.bbrest;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.internal.util.collection.MultivaluedStringMap;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -15,6 +17,8 @@ import java.net.URI;
 import java.util.function.Function;
 
 public class TokenContext {
+
+    private final Logger logger = LoggerFactory.getLogger(TokenContext.class);
 
     private final URI accessTokenUri;
     private final Function<Response, String> errorExtractor;
@@ -43,6 +47,8 @@ public class TokenContext {
 
     public TokenResponse fetchAccessToken(final ClientRequestContext requestContext) {
         if (token == null || token.hasExpired()) {
+            logger.debug("New token required");
+
             final Client c = ClientBuilder.newBuilder()
                     .sslContext(requestContext.getClient().getSslContext())
                     .hostnameVerifier(requestContext.getClient().getHostnameVerifier())
@@ -59,7 +65,7 @@ public class TokenContext {
 
             if (r.getStatus() != 200) {
                 final String errorDescription = this.errorExtractor.apply(r);
-                System.out.println(errorDescription);
+                logger.error(errorDescription);
                 throw new AuthenticationFailureException("OAuth Client Credential Authentication failed: " + errorDescription);
             } else {
                 token = r.readEntity(TokenResponse.class);

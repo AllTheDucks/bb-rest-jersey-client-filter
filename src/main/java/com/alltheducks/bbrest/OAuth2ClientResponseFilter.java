@@ -1,5 +1,8 @@
 package com.alltheducks.bbrest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientResponseContext;
@@ -9,6 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class OAuth2ClientResponseFilter implements ClientResponseFilter {
+
+    private final Logger logger = LoggerFactory.getLogger(OAuth2ClientResponseFilter.class);
 
     private static final String TOKEN_RETRY_REQUEST_PROPERTY_KEY = "tokenretryrequest";
 
@@ -24,7 +29,7 @@ public class OAuth2ClientResponseFilter implements ClientResponseFilter {
         final boolean isRetryRequest = retryRequestProperty != null && retryRequestProperty;
 
         if (responseContext.getStatus() == 401 && !isRetryRequest) {
-            System.out.println("Set token to null, and re-request...");
+            logger.debug("Set token to null, and re-request...");
             this.tokenContext.setToken(null);
             this.tokenContext.fetchAccessToken(requestContext);
 

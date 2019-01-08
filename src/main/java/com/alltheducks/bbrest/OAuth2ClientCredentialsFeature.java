@@ -8,18 +8,16 @@ import java.util.function.Function;
 
 public class OAuth2ClientCredentialsFeature implements Feature {
 
-    private final OAuth2ClientRequestFilter requestFilter;
-    private final OAuth2ClientResponseFilter responseFilter;
+    private final String oauthKey;
+    private final String oauthSecret;
+    private final URI accessTokenUri;
+    private final Function<Response, String> errorExtractor;
 
-    public OAuth2ClientCredentialsFeature(final String oauthKey,
-                                          final String oauthSecret,
-                                          final URI accessTokenUri,
-                                          final Function<Response, String> errorExtractor) {
-
-        final TokenContext tokenContext = new TokenContext(oauthKey, oauthSecret, accessTokenUri, errorExtractor);
-
-        this.requestFilter = new OAuth2ClientRequestFilter(tokenContext);
-        this.responseFilter = new OAuth2ClientResponseFilter(tokenContext);
+    public OAuth2ClientCredentialsFeature(String oauthKey, String oauthSecret, URI accessTokenUri, Function<Response, String> errorExtractor) {
+        this.oauthKey = oauthKey;
+        this.oauthSecret = oauthSecret;
+        this.accessTokenUri = accessTokenUri;
+        this.errorExtractor = errorExtractor;
     }
 
     public OAuth2ClientCredentialsFeature(final String oauthKey, final String oauthSecret, final URI accessTokenUri) {
@@ -31,8 +29,11 @@ public class OAuth2ClientCredentialsFeature implements Feature {
 
     @Override
     public boolean configure(final FeatureContext context) {
-        context.register(requestFilter);
-        context.register(responseFilter);
+        final TokenContext tokenContext = new TokenContext(this.oauthKey, this.oauthSecret, this.accessTokenUri, this.errorExtractor);
+
+        context.register(new OAuth2ClientRequestFilter(tokenContext));
+        context.register(new OAuth2ClientResponseFilter(tokenContext));
+
         return true;
     }
 
