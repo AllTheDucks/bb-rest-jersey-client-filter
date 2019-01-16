@@ -1,4 +1,4 @@
-package com.alltheducks.bbrest;
+package com.alltheducks.bbrest.jersey;
 
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.HttpHeaders;

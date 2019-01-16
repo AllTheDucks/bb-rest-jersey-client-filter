@@ -1,16 +1,12 @@
-package com.alltheducks.bbrest;
+package com.alltheducks.bbrest.jersey;
 
-import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.internal.util.collection.MultivaluedStringMap;
-import org.glassfish.jersey.jackson.JacksonFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.net.URI;
@@ -21,33 +17,28 @@ public class TokenContext {
 
     private final Logger logger = LoggerFactory.getLogger(TokenContext.class);
 
+    private final Client tokenClient;
     private final URI accessTokenUri;
     private final Function<Response, String> errorExtractor;
-    private final Feature authFilter;
     private final Clock clock;
 
     private Token token;
     private long tokenLastRefreshedTime;
 
-    public TokenContext(final String oauthKey,
-                        final String oauthSecret,
-                        final URI accessTokenUri,
+    public TokenContext(final URI accessTokenUri,
+                        final Client tokenClient,
                         final Function<Response, String> errorExtractor,
                         final Clock clock) {
-
+        this.tokenClient = tokenClient;
         this.errorExtractor = errorExtractor;
         this.accessTokenUri = accessTokenUri;
-
-        this.authFilter = HttpAuthenticationFeature.basic(oauthKey, oauthSecret);
-
         this.clock = clock;
     }
 
-    public TokenContext(final String oauthKey,
-                        final String oauthSecret,
-                        final URI accessTokenUri,
+    public TokenContext(final URI accessTokenUri,
+                        final Client tokenClient,
                         final Function<Response, String> errorExtractor) {
-        this(oauthKey, oauthSecret, accessTokenUri, errorExtractor, Clock.systemUTC());
+        this(accessTokenUri, tokenClient, errorExtractor, Clock.systemUTC());
     }
 
     public synchronized void clearToken() {
@@ -66,17 +57,10 @@ public class TokenContext {
         if (token == null || isTokenExpired(token)) {
             logger.debug("New token required");
 
-            final Client c = ClientBuilder.newBuilder()
-                    .sslContext(requestContext.getClient().getSslContext())
-                    .hostnameVerifier(requestContext.getClient().getHostnameVerifier())
-                    .register(JacksonFeature.class)
-                    .register(this.authFilter)
-                    .build();
-
             final MultivaluedMap<String, String> formData = new MultivaluedStringMap();
             formData.putSingle("grant_type", "client_credentials");
 
-            final Response r = c.target(this.accessTokenUri)
+            final Response r = this.tokenClient.target(this.accessTokenUri)
                     .request()
                     .post(Entity.form(formData));
 

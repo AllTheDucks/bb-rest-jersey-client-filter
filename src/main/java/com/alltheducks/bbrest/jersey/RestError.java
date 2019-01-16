@@ -1,4 +1,4 @@
-package com.alltheducks.bbrest;
+package com.alltheducks.bbrest.jersey;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
