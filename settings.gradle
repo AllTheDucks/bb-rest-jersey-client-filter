@@ -16,4 +16,5 @@ include 'api'
 include 'services:webservice'
 */
 
-rootProject.name = 'jersey-oauth2-client'
+rootProject.name = 'jersey-bbrest-oauth2-client'
+
