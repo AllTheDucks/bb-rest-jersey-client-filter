@@ -1,4 +1,4 @@
-package com.alltheducks.bbrest;
+package com.alltheducks.bbrest.jersey;
 
 public class AuthenticationFailureException extends RuntimeException {
 
