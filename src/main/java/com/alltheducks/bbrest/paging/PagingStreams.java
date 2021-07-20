@@ -23,11 +23,13 @@ public class PagingStreams {
         return StreamSupport.stream(Spliterators.spliteratorUnknownSize(it, IMMUTABLE & NONNULL), false);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> Stream<T> getStream(final Function<Long, Response> request,
                                           final Class<T> entityType) {
         return getStream(request, entityType, PagedResult.class, PagedResult::getResults);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> Stream<T> getStream(final Function<Long, Response> request,
                                           final GenericType<T> entityType) {
         return getStream(request, entityType, PagedResult.class, PagedResult::getResults);
@@ -37,7 +39,7 @@ public class PagingStreams {
                                              final Class<T> entityType,
                                              final Class<U> pageClass,
                                              final Function<U, Iterable<T>> resultExtractor) {
-        GenericType<U> responseType = new GenericType<>(new PagedResultType(entityType, pageClass));
+        final GenericType<U> responseType = new GenericType<>(new PagedResultType<>(entityType, pageClass));
         return getStream(request, responseType, resultExtractor);
     }
 
@@ -45,7 +47,7 @@ public class PagingStreams {
                                              final GenericType<T> entityType,
                                              final Class<U> pageClass,
                                              final Function<U, Iterable<T>> resultExtractor) {
-        final GenericType<U> responseType = new GenericType<>(new PagedResultType(entityType.getType(), pageClass));
+        final GenericType<U> responseType = new GenericType<>(new PagedResultType<>(entityType.getType(), pageClass));
         return getStream(request, responseType, resultExtractor);
     }
 
@@ -67,12 +69,12 @@ public class PagingStreams {
         });
     }
 
-    private static class PagedResultType implements ParameterizedType {
+    private static class PagedResultType<T> implements ParameterizedType {
 
         private final Type parameterType;
-        private final Class pageClass;
+        private final Class<T> pageClass;
 
-        PagedResultType(final Type parameterType, final Class pageClass) {
+        PagedResultType(final Type parameterType, final Class<T> pageClass) {
             this.parameterType = parameterType;
             this.pageClass = pageClass;
         }
@@ -92,7 +94,5 @@ public class PagingStreams {
             return pageClass;
         }
     }
-
-    ;
 
 }

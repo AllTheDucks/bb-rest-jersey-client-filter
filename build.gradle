@@ -1,26 +1,33 @@
 apply plugin: 'java'
 
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 11
+targetCompatibility = 11
 
-version = '0.0.1'
+version = '1.0.0'
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
-    compile 'org.slf4j:slf4j-api:1.7.25'
+    implementation 'org.slf4j:slf4j-api:1.7.25'
 
-    testCompile 'org.slf4j:slf4j-simple:1.7.25'
-    testCompile 'junit:junit:4.12'
+    testImplementation 'org.slf4j:slf4j-simple:1.7.25'
+    testImplementation 'junit:junit:4.12'
 
-    compile 'org.glassfish.jersey.core:jersey-client:2.27'
-    compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.27'
-    compile 'org.glassfish.jersey.security:oauth2-client:2.27'
-    compile 'org.glassfish.jersey.inject:jersey-hk2:2.27'
-    compile 'javax.activation:activation:1.1.1'
-    compile 'javax.xml.bind:jaxb-api:2.3.1'
+    implementation 'org.glassfish.jersey.core:jersey-client:2.27'
+    implementation 'org.glassfish.jersey.media:jersey-media-json-jackson:2.27'
+    implementation 'org.glassfish.jersey.security:oauth2-client:2.27'
+    implementation 'org.glassfish.jersey.inject:jersey-hk2:2.27'
+    implementation 'javax.activation:activation:1.1.1'
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
 }
 
+allprojects {
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        }
+    }
+}
