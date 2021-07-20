@@ -1,5 +1,7 @@
 package com.alltheducks.bbrest.paging;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.List;
 
 /**
@@ -11,6 +13,7 @@ import java.util.List;
  *
  * @param <T> The type of object contained in the result. I.e. if this is a page of users T would be a user model.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PagedResult<T> {
 
     private List<T> results;
