@@ -6,8 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Clock;
 
-@JsonIgnoreProperties
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Token {
+    private String scope;
     private String accessToken;
     private String tokenType;
     private int expiresIn;
@@ -39,4 +40,12 @@ public class Token {
         this.expiresIn = expiresIn;
     }
 
+    @JsonProperty("scope")
+    public void setScope(String scope) {
+        this.scope = scope;
+    }
+
+    public String getScope() {
+        return scope;
+    }
 }

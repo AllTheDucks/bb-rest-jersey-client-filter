@@ -27,27 +27,27 @@ public class RestClient {
     public static void main(String[] args) throws URISyntaxException, KeyManagementException, NoSuchAlgorithmException {
         ClientBuilder builder = getUnsafeSSLClientBuilder();
 
-        String oauthKey = args[0];
-        String oauthSecret = args[1];
+        String baseUrl = args[0];
+        String oauthKey = args[1];
+        String oauthSecret = args[2];
 
         Client c = builder
                 .register(JacksonFeature.class)
                 .register(new OAuth2ClientCredentialsFeature(
                         oauthKey,
                         oauthSecret,
-                        new URI("https://localhost:9877/learn/api/public/v1/oauth2/token")
+                        new URI(baseUrl + "/learn/api/public/v1/oauth2/token")
                 ))
                 .build();
 
-        MultivaluedMap<String, String> formdata = new MultivaluedStringMap();
-        Response r = c.target("https://localhost:9877/learn/api/public/v1/courses/_1_1")
+        Response r = c.target(baseUrl + "/learn/api/public/v1/courses/_1_1")
                 .request()
                 .get();
 
         String responseBody = r.readEntity(String.class);
         System.out.println(responseBody);
 
-        r = c.target("https://localhost:9877/learn/api/public/v1/courses/_1_1")
+        r = c.target(baseUrl + "/learn/api/public/v1/courses/_1_1")
                 .request()
                 .get();
 
@@ -65,7 +65,7 @@ public class RestClient {
             public void checkServerTrusted(X509Certificate[] certs, String authType){}
         }};
 
-// Install the all-trusting trust manager
+        // Install the all-trusting trust manager
         SSLContext sc = null;
         try {
             sc = SSLContext.getInstance("TLS");
