@@ -12,7 +12,6 @@ class PagingIterator<T> implements Iterator<T> {
     private final PageSource<T> pageSource;
 
     private Iterator<T> currentPageIterator = Collections.emptyIterator();
-    private long pageNumber = 0;
 
     public PagingIterator(final PageSource<T> pageSource) {
         this.pageSource = pageSource;
@@ -20,7 +19,7 @@ class PagingIterator<T> implements Iterator<T> {
 
     private Iterator<T> getPage() {
         if(!currentPageIterator.hasNext()) {
-            final Iterable<T> page = pageSource.fetch(pageNumber++);
+            final Iterable<T> page = pageSource.nextPage();
             currentPageIterator = page != null ? page.iterator() : Collections.emptyIterator();
         }
         return currentPageIterator;

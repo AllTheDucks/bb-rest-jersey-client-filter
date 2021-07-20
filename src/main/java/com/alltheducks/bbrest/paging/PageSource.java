@@ -9,9 +9,8 @@ public interface PageSource<T> {
 
     /**
      * Request the results from the REST API.
-     * @param page The page number to request (zero based index).
      * @return The results associated with the page.
      */
-    Iterable<T> fetch(long page);
+    Iterable<T> nextPage();
 
 }

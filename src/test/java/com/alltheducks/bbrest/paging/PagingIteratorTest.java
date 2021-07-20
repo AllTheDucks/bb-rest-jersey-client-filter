@@ -103,22 +103,22 @@ public class PagingIteratorTest {
 
     @Test
     public void testNumberOfPagesRequested() {
-        final CountingPageSource<Integer> source = counting(pageSource(intRange(1, 3)));
+        final RequestCountingPageSource<Integer> source = counting(pageSource(intRange(1, 3)));
 
         final PagingIterator<Integer> iterator = new PagingIterator<>(source);
         Lists.newArrayList(iterator);
 
-        assertEquals(2, source.getCount());
+        assertEquals(2, source.getRequestCount());
     }
 
     @Test
     public void testNumberOfPagesRequested_oneHundredPages() {
-        final CountingPageSource<Integer> source = counting(pageSource(partition(intRange(1, 1000), 10)));
+        final RequestCountingPageSource<Integer> source = counting(pageSource(partition(intRange(1, 1000), 10)));
 
         final PagingIterator<Integer> iterator = new PagingIterator<>(source);
         Lists.newArrayList(iterator);
 
-        assertEquals(101, source.getCount());
+        assertEquals(101, source.getRequestCount());
     }
 
 

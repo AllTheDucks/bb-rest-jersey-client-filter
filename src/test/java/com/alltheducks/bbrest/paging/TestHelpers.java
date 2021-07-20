@@ -11,21 +11,25 @@ public class TestHelpers {
 
     @SafeVarargs
     static <T> PageSource<T> pageSource(Iterable<T>... pages) {
-        return (page) -> page < pages.length ? pages[(int)page] : Collections.emptyList();
+        AtomicInteger pageCount = new AtomicInteger(0);
+        return () -> {
+            int page = pageCount.getAndIncrement();
+            return page < pages.length ? pages[page] : Collections.emptyList();
+        };
     }
 
-    static <T> CountingPageSource<T> counting(final PageSource<T> pageSource) {
-        return new CountingPageSource<>(pageSource);
+    static <T> RequestCountingPageSource<T> counting(final PageSource<T> pageSource) {
+        return new RequestCountingPageSource<>(pageSource);
     }
 
     static <T> PageSource<T> delay(long delayMillis, PageSource<T> pageSource) {
-        return (page) -> {
+        return () -> {
             try {
                 Thread.sleep(delayMillis);
             } catch (InterruptedException ignored) {
             }
 
-            return pageSource.fetch(page);
+            return pageSource.nextPage();
         };
     }
 
@@ -62,24 +66,24 @@ public class TestHelpers {
         }
     }
 
-    static class CountingPageSource<T> implements PageSource<T> {
+    static class RequestCountingPageSource<T> implements PageSource<T> {
 
-        private long count;
+        private long requestCount;
 
         private final PageSource<T> internalPageSource;
 
-        public CountingPageSource(PageSource<T> internalPageSource) {
+        public RequestCountingPageSource(PageSource<T> internalPageSource) {
             this.internalPageSource = internalPageSource;
         }
 
         @Override
-        public Iterable<T> fetch(long page) {
-            count++;
-            return internalPageSource.fetch(page);
+        public Iterable<T> nextPage() {
+            requestCount++;
+            return internalPageSource.nextPage();
         }
 
-        public long getCount() {
-            return count;
+        public long getRequestCount() {
+            return requestCount;
         }
     }
 

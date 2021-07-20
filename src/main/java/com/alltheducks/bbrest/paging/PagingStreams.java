@@ -5,7 +5,9 @@ import javax.ws.rs.core.Response;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Spliterators;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -40,18 +42,25 @@ public class PagingStreams {
     }
 
     public static <T, U> Stream<T> getStream(final Function<Long, Response> request,
-                                          final GenericType<T> entityType,
-                                          final Class<U> pageClass,
-                                          final Function<U, Iterable<T>> resultExtractor) {
+                                             final GenericType<T> entityType,
+                                             final Class<U> pageClass,
+                                             final Function<U, Iterable<T>> resultExtractor) {
         final GenericType<U> responseType = new GenericType<>(new PagedResultType(entityType.getType(), pageClass));
         return getStream(request, responseType, resultExtractor);
     }
 
     public static <T, U> Stream<T> getStream(final Function<Long, Response> request,
-                                                final GenericType<U> responseType,
-                                                   final Function<U, Iterable<T>> resultExtractor) {
-        return getStream((page) -> {
-            final Response response = request.apply(page);
+                                             final GenericType<U> responseType,
+                                             final Function<U, Iterable<T>> resultExtractor) {
+        final AtomicLong pageCount = new AtomicLong(0);
+        return getStream(() -> request.apply(pageCount.getAndIncrement()), responseType, resultExtractor);
+    }
+
+    public static <T, U> Stream<T> getStream(final Supplier<Response> request,
+                                             final GenericType<U> responseType,
+                                             final Function<U, Iterable<T>> resultExtractor) {
+        return getStream(() -> {
+            final Response response = request.get();
 
             final U result = response.readEntity(responseType);
             return resultExtractor.apply(result);
