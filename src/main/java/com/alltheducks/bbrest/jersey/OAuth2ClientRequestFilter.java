@@ -1,7 +1,7 @@
 package com.alltheducks.bbrest.jersey;
 
-import javax.ws.rs.client.*;
-import javax.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.client.*;
+import jakarta.ws.rs.core.HttpHeaders;
 import java.io.IOException;
 
 public class OAuth2ClientRequestFilter implements ClientRequestFilter {

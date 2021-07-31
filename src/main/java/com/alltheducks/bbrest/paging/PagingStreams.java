@@ -1,7 +1,7 @@
 package com.alltheducks.bbrest.paging;
 
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Spliterators;

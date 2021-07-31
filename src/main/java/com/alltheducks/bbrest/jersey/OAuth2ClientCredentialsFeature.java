@@ -1,8 +1,8 @@
 package com.alltheducks.bbrest.jersey;
 
-import javax.ws.rs.core.Feature;
-import javax.ws.rs.core.FeatureContext;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Feature;
+import jakarta.ws.rs.core.FeatureContext;
+import jakarta.ws.rs.core.Response;
 import java.net.URI;
 import java.util.function.Function;
 
