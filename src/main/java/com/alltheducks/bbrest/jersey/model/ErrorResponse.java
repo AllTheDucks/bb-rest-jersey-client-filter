@@ -1,18 +1,9 @@
-package com.alltheducks.bbrest.jersey;
+package com.alltheducks.bbrest.jersey.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class RestError {
-    private String error;
+public class ErrorResponse {
     private String errorDescription;
-
-    public String getError() {
-        return error;
-    }
-
-    public void setError(String error) {
-        this.error = error;
-    }
 
     public String getErrorDescription() {
         return errorDescription;

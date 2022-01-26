@@ -1,7 +1,7 @@
 package com.alltheducks.bbrest.paging;
 
 import org.glassfish.jersey.internal.guava.Lists;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import static com.alltheducks.bbrest.paging.TestHelpers.*;
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PagingIteratorTest {
 

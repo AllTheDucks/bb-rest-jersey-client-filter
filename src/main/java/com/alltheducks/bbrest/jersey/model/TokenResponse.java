@@ -1,10 +1,10 @@
-package com.alltheducks.bbrest.jersey;
+package com.alltheducks.bbrest.jersey.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Token {
+public class TokenResponse {
     private String scope;
     private String accessToken;
     private String tokenType;

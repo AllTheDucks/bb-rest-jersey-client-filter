@@ -5,3 +5,4 @@ classes
 *.iml
 .sass-cache
 out
+.DS_Store

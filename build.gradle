@@ -12,7 +12,10 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:1.7.25'
 
     testImplementation 'org.slf4j:slf4j-simple:1.7.25'
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    testImplementation 'org.mockito:mockito-core:4.2.0'
+    testImplementation 'org.threeten:threeten-extra:1.7.0'
 
     implementation 'org.glassfish.jersey.core:jersey-client:3.0.2'
     implementation 'org.glassfish.jersey.media:jersey-media-json-jackson:3.0.2'
@@ -20,6 +23,10 @@ dependencies {
     implementation 'org.glassfish.jersey.inject:jersey-hk2:3.0.2'
 //    implementation 'jakarta.activation:jakarta.activation-api:2.0.1'
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
+}
+
+test {
+    useJUnitPlatform()
 }
 
 allprojects {
